@@ -17,6 +17,14 @@ pipeline {
                 }
             }
         }
+        stage('Pre-build') {
+           steps {
+                script {
+                    sh 'sudo apt-get update'
+                    sh 'sudo apt-get install -y php'
+                }
+            }
+        }
 
         stage('Build') {
             steps {
