@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     sh 'curl -sS https://getcomposer.org/installer | php'
-                    sh 'sudo -n mv composer.phar /usr/local/bin/composer'
+                    sh 'sudo -i /home/ubuntu/MyKeyPair.pem -u root mv composer.phar /usr/local/bin/composer'
 
                     
                     sh 'composer install'
