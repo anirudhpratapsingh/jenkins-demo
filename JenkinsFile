@@ -34,7 +34,7 @@ pipeline {
                 
                      
                                 
-                    sh 'vendor/bin/phpunit
+                    sh 'vendor/bin/phpunit'
                 
             }
         }
