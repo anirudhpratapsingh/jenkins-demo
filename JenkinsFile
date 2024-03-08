@@ -9,10 +9,10 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    // Clean workspace before checking out
+                    
                     deleteDir()
 
-                    // Checkout code from the repository
+                    
                     git branch: 'main', credentialsId: '3c32a489-c641-428c-8162-bc463f5fb0f4', url: env.GIT_REPO_URL
                 }
             }
@@ -32,7 +32,7 @@ pipeline {
                     sh 'curl -sS https://getcomposer.org/installer | php'
                     sh 'mv composer.phar /usr/local/bin/composer'
 
-                    // Install project dependencies using Composer
+                    
                     sh 'composer install'
 
                 }
@@ -42,12 +42,12 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                     // Install PHPUnit
+                     
                     sh 'wget https://phar.phpunit.de/phpunit.phar'
                     sh 'chmod +x phpunit.phar'
                     sh 'mv phpunit.phar /usr/local/bin/phpunit'
 
-                    // Run PHPUnit tests
+                    
                     sh 'phpunit'
                 }
             }
