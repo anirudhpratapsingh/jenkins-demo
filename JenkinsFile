@@ -22,10 +22,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'curl -sS https://getcomposer.org/installer | php'
-                    sh 'sudo -u root -i /home/ubuntu/MyKeyPair.pem mv composer.phar /usr/local/bin/composer'
-
-                    
+                                      
                     sh 'composer install'
 
                 }
@@ -36,12 +33,8 @@ pipeline {
             steps {
                 script {
                      
-                    sh 'wget https://phar.phpunit.de/phpunit.phar'
-                    sh 'chmod +x phpunit.phar'
-                    sh 'mv phpunit.phar /usr/local/bin/phpunit'
-
-                    
-                    sh 'phpunit'
+                                
+                    sh 'vendor/bin/phpunit
                 }
             }
         }
