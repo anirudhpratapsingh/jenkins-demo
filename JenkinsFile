@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     sh 'curl -sS https://getcomposer.org/installer | php'
-                    sh 'sudo mv composer.phar /usr/local/bin/composer'
+                    sh 'sudo -n mv composer.phar /usr/local/bin/composer'
 
                     
                     sh 'composer install'
