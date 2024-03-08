@@ -21,9 +21,12 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Customize build steps as per your PHP application requirements
+                    sh 'curl -sS https://getcomposer.org/installer | php'
+                    sh 'mv composer.phar /usr/local/bin/composer'
+
+                    // Install project dependencies using Composer
                     sh 'composer install'
-                    // Additional build steps if needed
+
                 }
             }
         }
@@ -31,9 +34,13 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Run your PHP unit tests or any other testing commands here
+                     // Install PHPUnit
+                    sh 'wget https://phar.phpunit.de/phpunit.phar'
+                    sh 'chmod +x phpunit.phar'
+                    sh 'mv phpunit.phar /usr/local/bin/phpunit'
+
+                    // Run PHPUnit tests
                     sh 'phpunit'
-                    // Additional testing steps if needed
                 }
             }
         }
