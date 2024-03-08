@@ -1,32 +1,61 @@
 pipeline {
     agent any
+    
+    environment {
+        GIT_REPO_URL = 'https://github.com/anirudhpratapsingh/jenkins-demo.git'
+        PRIVATE_INSTANCE_IP = '10.0.2.115'
+        BASTION_HOST = '54.162.192.96'
+        BASTION_USERNAME = 'ubuntu'
+    }
 
     stages {
-               
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building'
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                echo 'Testing'
-            }
-        }
-        
-        stage('Deploy') {
-            steps {
-                echo 'Deploying'
+                script {
+                    // Clean workspace before checking out
+                    deleteDir()
+
+                    // Checkout code from the repository
+                    git branch: 'main', credentialsId: '3c32a489-c641-428c-8162-bc463f5fb0f4', url: env.GIT_REPO_URL
+                }
             }
         }
 
-        stage('Release') {
+        stage('Build') {
             steps {
-                echo 'Releasing'
+                script {
+                    // Install Composer
+                    sh 'curl -sS https://getcomposer.org/installer -o composer-setup.php'
+                    sh 'php composer-setup.php --install-dir=/usr/local/bin --filename=composer'
+
+                    // Install project dependencies using Composer
+                    sh 'composer install'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Install PHPUnit
+                    sh 'wget https://phar.phpunit.de/phpunit.phar'
+                    sh 'chmod +x phpunit.phar'
+                    sh 'mv phpunit.phar /usr/local/bin/phpunit'
+
+                    // Run PHPUnit tests
+                    sh 'phpunit'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Copy files to the private instance using SCP through the bastion host
+                    sh "scp -r -o StrictHostKeyChecking=no -i /home/ubuntu/keys/bastion-host.pem ./* ${BASTION_USERNAME}@${BASTION_HOST}:/home/ubuntu/temp"
+                    sh "ssh -o StrictHostKeyChecking=no -i /home/ubuntu/keys/bastion-host.pem ${BASTION_USERNAME}@${BASTION_HOST} 'scp -r /home/ubuntu/temp/* ubuntu@${env.PRIVATE_INSTANCE_IP}:/home/ubuntu'"
+                }
             }
         }
     }
-    
-    
 }
