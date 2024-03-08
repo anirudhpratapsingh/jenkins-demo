@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    
+    environment {
+        GIT_REPO_URL = 'https://github.com/anirudhpratapsingh/jenkins-demo.git'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Clean workspace before checking out
+                    deleteDir()
+
+                    // Checkout code from the repository
+                    git branch: 'main', credentialsId: '3c32a489-c641-428c-8162-bc463f5fb0f4', url: env.GIT_REPO_URL
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Customize build steps as per your PHP application requirements
+                    sh 'composer install'
+                    // Additional build steps if needed
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Run your PHP unit tests or any other testing commands here
+                    sh 'phpunit'
+                    // Additional testing steps if needed
+                }
+            }
+        }
+    }
+}
