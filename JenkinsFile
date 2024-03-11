@@ -34,5 +34,30 @@ pipeline {
                 
             }
         }
+
+       stage('Deploy to EC2') {
+           steps {
+             script {
+            // Variables
+            def bastionHost = '54.162.192.96'
+            def ec2Host = '10.0.2.115'
+            def privateKey = credentials('bastion-host-key')
+
+            // Copy artifacts to the bastion host
+            sh "scp -i ${privateKey} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r target/* ubuntu@${bastionHost}:/tmp/"
+
+            // SSH into the bastion host and copy artifacts to the EC2 instance
+            sshagent(['bastion-host-key']) {
+                sh """
+                    ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${bastionHost} << 'EOF'
+                        ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${ec2Host} 'mkdir -p /var/www/deploy'
+                        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r /tmp/* ubuntu@${ec2Host}:/var/www/deploy
+                    EOF
+                """
+            }
+        }
+    }
+}
+
     }
 }
