@@ -20,7 +20,7 @@ pipeline {
                 
                                       
                     sh 'composer install'
-                    sh 'echo "Hello dsgfs adefsdgf" '
+                    sh 'echo "Hello dsgfs adefsdgf sdfajsdf" '
 
                 
             }
