@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    
+    environment {
+        GIT_REPO_URL = 'https://github.com/anirudhpratapsingh/jenkins-demo.git'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                 
+                    git branch: 'main', credentialsId: '3c32a489-c641-428c-8162-bc463f5fb0f4', url: env.GIT_REPO_URL
+                
+            }
+        }
+       
+
+        stage('Build') {
+            steps {
+                
+                                      
+                    sh 'composer install'
+
+                
+            }
+        }
+    }
+}
