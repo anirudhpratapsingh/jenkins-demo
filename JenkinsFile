@@ -14,7 +14,7 @@ pipeline {
                     echo "Git checkout exit code: ${gitCheckout}"
 
                     if (gitCheckout != 0) {
-                error('Git checkout failed')
+                        error('Git checkout failed')
                     }
                 }
                 
