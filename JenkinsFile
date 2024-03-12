@@ -11,7 +11,10 @@ pipeline {
                  
                     script {
                     def gitCheckout = git branch: 'main', credentialsId: '3c32a489-c641-428c-8162-bc463f5fb0f4', url: env.GIT_REPO_URL
-                   
+                    echo "Git checkout exit code: ${gitCheckout}"
+
+                    if (gitCheckout != 0) {
+                error('Git checkout failed')
                     }
                 }
                 
