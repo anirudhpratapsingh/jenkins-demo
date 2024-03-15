@@ -46,7 +46,7 @@ pipeline {
         script {
             // Define variables
             def webServerHost = '10.0.2.115'
-            def credentialId = 'web-server-key'
+            def credentialId = 'web-server-pem'
             def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
             // Remove existing files on the web server
