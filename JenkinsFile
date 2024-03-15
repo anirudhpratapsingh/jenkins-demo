@@ -42,30 +42,13 @@ pipeline {
         }
 
        stage('Deploy to EC2') {
-           steps {
-             script {
-            
-            def bastionHost = '107.20.38.66'
-            def ec2Host = '10.0.2.115'
-            def privateKey = credentials('bastion-host-key')
-
-            sshagent(['bastion-host-key']) {
-                sh "ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${ec2Host} 'rm -rf /var/www/deploy/*'"
-            }
-            sh "scp -i ${privateKey} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r target/* ubuntu@${bastionHost}:/tmp/"
-
-            
-            sshagent(['bastion-host-key']) {
-    sh """
-        ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${bastionHost} \
-            ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${ec2Host} 'mkdir -p /var/www/deploy' \
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r /tmp/* ubuntu@${ec2Host}:/var/www/deploy
-    """
-}
-
-        }
+    steps {
+        sh 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@10.0.2.115 "rm -rf /var/www/deploy/*"'
+        sh 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r target/* ubuntu@10.0.2.115:/tmp/'
+        sh 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@10.0.2.115 "mkdir -p /var/www/deploy && cp -r /tmp/* /var/www/deploy/"'
     }
 }
+
 
     }
 }
