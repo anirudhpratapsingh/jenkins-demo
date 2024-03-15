@@ -45,7 +45,7 @@ pipeline {
            steps {
              script {
             
-            def bastionHost = '54.162.192.96'
+            def bastionHost = '107.20.38.66'
             def ec2Host = '10.0.2.115'
             def privateKey = credentials('bastion-host-key')
 
