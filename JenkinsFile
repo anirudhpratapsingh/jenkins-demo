@@ -55,7 +55,7 @@ pipeline {
                 sh "ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${bastionHost} 'ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} rm -rf /var/www/deploy/*'"
 
                 // Copy files from Jenkins to bastion host
-                sh "scp -i ${privateKey} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r /var/lib/jenkins/workspace/pipelineone/src/* ubuntu@${bastionHost}:/tmp/"
+                sh "scp -i ${privateKey} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r /var/lib/jenkins/workspace/pipelineone/src/ ubuntu@${bastionHost}:/tmp/"
 
                 // Copy files from bastion host to web server
                 sh "ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${bastionHost} ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} 'mkdir -p /var/www/deploy && cp -r /tmp/* /var/www/deploy/'"
