@@ -43,11 +43,18 @@ pipeline {
 
        stage('Deploy to EC2') {
     steps {
-        sh 'ssh ubuntu@10.0.2.115 "rm -rf /var/www/deploy/*"'
-        sh 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r target/* ubuntu@10.0.2.115:/tmp/'
-        sh 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@10.0.2.115 "mkdir -p /var/www/deploy && cp -r /tmp/* /var/www/deploy/"'
+        
+        def webServerHost = '10.0.2.115'
+        def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
+
+        
+        sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
+
+        
+        sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
     }
 }
+
 
 
     }
