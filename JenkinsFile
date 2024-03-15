@@ -42,20 +42,28 @@ pipeline {
         }
 
        stage('Deploy to EC2') {
-             steps {
-               script{
-        
-                def webServerHost = '10.0.2.115'
-                def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
+            steps {
+              script {
+            // Define variables
+            def bastionHost = '107.20.38.66'
+            def webServerHost = '10.0.2.115'
+            def privateKey = credentials('bastion-host-key')
 
-        
-                sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
+            // SSH into the bastion host and execute commands
+            sshagent(['bastion-host-key']) {
+                // Remove existing files on the web server
+                sh "ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${bastionHost} 'ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} rm -rf /var/www/deploy/*'"
 
-        
-                sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
+                // Copy files from Jenkins to bastion host
+                sh "scp -i ${privateKey} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r /var/lib/jenkins/workspace/pipelineone/src/* ubuntu@${bastionHost}:/tmp/"
+
+                // Copy files from bastion host to web server
+                sh "ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${bastionHost} ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} 'mkdir -p /var/www/deploy && cp -r /tmp/* /var/www/deploy/'"
+            }
+        }
     }
-  }
 }
+
 
 
     }
