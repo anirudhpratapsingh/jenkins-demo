@@ -49,6 +49,11 @@ pipeline {
             def credentialId = 'webserver'
             def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
+            sshagent(credentials : ['webserver']){
+
+   sh "ssh command"
+
+}
             // Remove existing files on the web server
             sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${credentialId} ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
 
