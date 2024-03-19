@@ -3,6 +3,7 @@ pipeline {
     
     environment {
         GIT_REPO_URL = 'https://github.com/anirudhpratapsingh/jenkins-demo.git'
+        WEB_SERVER_HOST = '10.0.2.172'
     }
 
     stages {
@@ -32,24 +33,23 @@ pipeline {
             }
         }
 
-       stage('Deploy to EC2') {
-           steps {
-             withCredentials([
-                sshUserPrivateKey(credentialsId: 'webserver')
-              ]) {
-                script {
-                  def webServerHost = '10.0.2.172'
-                  def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
+        stage('Deploy to EC2') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'webserver', keyFileVariable: 'SSH_KEY_FILE', usernameVariable: 'SSH_USERNAME')
+                ]) {
+                    script {
+                        // Define variables
+                        def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
-                  // Remove existing files on the web server
-                  sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
+                        // Remove existing files on the web server
+                        sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${SSH_KEY_FILE} ${SSH_USERNAME}@${env.WEB_SERVER_HOST} 'rm -rf /var/www/deploy/*'"
 
-                  // Copy files from Jenkins to web server
-                  sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
+                        // Copy files from Jenkins to web server
+                        sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${SSH_KEY_FILE} -r ${buildArtifactsPath} ${SSH_USERNAME}@${env.WEB_SERVER_HOST}:/var/www/deploy/"
+                    }
+                }
             }
         }
-    }
-}
-
     }
 }
