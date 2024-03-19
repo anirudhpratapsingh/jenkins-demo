@@ -7,49 +7,60 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                script {
-                    def gitResult = git branch: 'main', credentialsId: '3c32a489-c641-428c-8162-bc463f5fb0f4', url: env.GIT_REPO_URL, returnStatus: true
-                    def gitExitCode = gitResult.GIT_BRANCH ? 0 : 1
-                    echo "Git checkout exit code: ${gitExitCode}"
+           steps {
+             script {
+            def gitResult = git branch: 'main', credentialsId: '3c32a489-c641-428c-8162-bc463f5fb0f4', url: env.GIT_REPO_URL, returnStatus: true
+            def gitExitCode = gitResult.GIT_BRANCH ? 0 : 1
+            echo "Git checkout exit code: ${gitExitCode}"
 
-                    if (gitExitCode != 0) {
-                        error('Git checkout failed')
-                    }
-                }
+            if (gitExitCode != 0) {
+                error('Git checkout failed')
             }
         }
+    }
+}
+
 
         stage('Build') {
             steps {
-                sh 'composer install'
+                
+                                      
+                    sh 'composer install'
+
+                
             }
         }
 
         stage('Test') {
             steps {
-                sh 'vendor/bin/phpunit --debug'
+                
+                     
+                                
+                    sh 'vendor/bin/phpunit --debug'
+                
             }
         }
 
        stage('Deploy to EC2') {
-           steps {
-             withCredentials([
-                sshUserPrivateKey(credentialsId: 'webserver', usernameVariable: 'MY_SSH_USER')
-              ]) {
-                script {
-                  def webServerHost = '10.0.2.172'
-                  def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
+    steps {
+        script {
+            // Define variables
+            def webServerHost = '10.0.2.172'
+            def credentialId = 'webserver'
+            def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
-                  // Remove existing files on the web server
-                  sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${env.MY_SSH_USER}@${webServerHost} 'rm -rf /var/www/deploy/*'"
+    
+            // Remove existing files on the web server
+            sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${credentialId} ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
 
-                  // Copy files from Jenkins to web server
-                  sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ${buildArtifactsPath} ${env.MY_SSH_USER}@${webServerHost}:/var/www/deploy/"
-            }
+            // Copy files from Jenkins to web server
+            sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${credentialId} -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
         }
     }
 }
+
+
+
 
     }
 }
