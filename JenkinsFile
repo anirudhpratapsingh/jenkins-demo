@@ -53,7 +53,7 @@ pipeline {
             sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
 
             // Copy files from Jenkins to web server
-            sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${credentialId} -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
+            sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
         }
     }
 }
