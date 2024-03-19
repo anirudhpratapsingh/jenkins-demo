@@ -45,7 +45,7 @@ pipeline {
     steps {
         script {
             // Define variables
-            def webServerHost = '10.0.2.115'
+            def webServerHost = '10.0.2.172'
             def credentialId = 'web-server-pem'
             def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
