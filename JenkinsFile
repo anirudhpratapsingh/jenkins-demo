@@ -50,7 +50,7 @@ pipeline {
             def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
             // Remove existing files on the web server
-            sh "ssh -i ${credentialId} ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
+            sh "ssh ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
 
             // Copy files from Jenkins to web server
             sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${credentialId} -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
