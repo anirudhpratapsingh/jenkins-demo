@@ -46,14 +46,14 @@ pipeline {
         script {
             // Define variables
             def webServerHost = '10.0.2.172'
-            // def credentialId = 'web-server-key'
+            def credentialId = 'web-server-key'
             def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
             // Remove existing files on the web server
-            sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
+            sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${credentialId} ubuntu@${webServerHost} 'rm -rf /var/www/deploy/*'"
 
             // Copy files from Jenkins to web server
-            sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
+            sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${credentialId} -r ${buildArtifactsPath} ubuntu@${webServerHost}:/var/www/deploy/"
         }
     }
 }
