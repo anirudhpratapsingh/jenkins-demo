@@ -23,13 +23,17 @@ pipeline {
 
         stage('Build') {
             steps {
+                script {
                 sh 'composer install'
+                }
             }
         }
 
         stage('Test') {
             steps {
+                script {
                 sh 'vendor/bin/phpunit --debug'
+                }
             }
         }
 
@@ -39,17 +43,19 @@ pipeline {
                     sshUserPrivateKey(credentialsId: 'webserver', keyFileVariable: 'SSH_KEY_FILE', usernameVariable: 'SSH_USERNAME')
                 ]) {
                     script {
-                        // Define variables
+                        // Variables
                         def buildArtifactsPath = '/var/lib/jenkins/workspace/pipelineone/src/*'
 
-                        // Remove existing files on the web server
+                        // Removing existing files on the web server
                         sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${SSH_KEY_FILE} ${SSH_USERNAME}@${env.WEB_SERVER_HOST} 'rm -rf /var/www/deploy/*'"
 
+                        // Creating dirctory for deploying the code 
                         sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${SSH_KEY_FILE} ${SSH_USERNAME}@${env.WEB_SERVER_HOST} 'sudo mkdir -p /var/www/deploy/'"
 
+                        // Changing Owner for the directory created
                         sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${SSH_KEY_FILE} ${SSH_USERNAME}@${env.WEB_SERVER_HOST} 'sudo chown ubuntu:ubuntu /var/www/deploy'"
 
-                        // Copy files from Jenkins to web server
+                        // Copying files from Jenkins to web server
                         sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${SSH_KEY_FILE} -r ${buildArtifactsPath} ${SSH_USERNAME}@${env.WEB_SERVER_HOST}:/var/www/deploy/"
                     }
                 }
