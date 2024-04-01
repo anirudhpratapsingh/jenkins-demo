@@ -40,7 +40,7 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 withCredentials([
-                    sshUserPrivateKey(credentialsId: 'webserver', keyFileVariable: 'SSH_KEY_FILE', usernameVariable: 'SSH_USERNAME')
+                    sshUserPrivateKey(credentialsId: 'webserver-key', keyFileVariable: 'SSH_KEY_FILE', usernameVariable: 'SSH_USERNAME')
                 ]) {
                     script {
                         // Variables
